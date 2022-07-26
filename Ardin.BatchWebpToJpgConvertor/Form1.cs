@@ -1,7 +1,4 @@
-﻿using GroupDocs.Conversion;
-using GroupDocs.Conversion.FileTypes;
-using GroupDocs.Conversion.Options.Convert;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -55,19 +52,18 @@ namespace Ardin.BatchWebpToJpgConvertor
                             });
                             continue;
                         }
-                        using (Converter converter = new Converter(file))
+
+                        string output = file.Replace(".webp", ".jpg");
+                        byte[] rawWebP = File.ReadAllBytes(file);
+                        using (WebP webp = new WebP())
                         {
-                            ImageConvertOptions options = new ImageConvertOptions
-                            {
-                                Format = ImageFileType.Jpg
-                            };
-                            string output = file.Replace(".webp", ".jpg");
-                            converter.Convert(output, options);
-                            listBox1.Invoke((MethodInvoker)delegate
-                            {
-                                listBox1.Items.Insert(0, Path.GetFileNameWithoutExtension(file) + " converted");
-                            });
+                            var bitmap = webp.Decode(rawWebP);
+                            bitmap.Save(output, System.Drawing.Imaging.ImageFormat.Jpeg);
                         }
+                        listBox1.Invoke((MethodInvoker)delegate
+                        {
+                            listBox1.Items.Insert(0, Path.GetFileNameWithoutExtension(file) + " converted");
+                        });
                     }
                     listBox1.Invoke((MethodInvoker)delegate
                     {
